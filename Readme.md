@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Yulik K](https://up.htmlacademy.ru/javascript/19/user/1150911).
-* Наставник: `Неизвестно`.
+* Наставник: `Старчиков Павел`.
 
 ---
 
