@@ -37,7 +37,7 @@ for (var i = 0; i < count; i++) {
   photos[i] = {
     name: 'photos/' + (i + 1) + '.jpg',
     description: PHOTO_DESCRIPTION[Math.floor(Math.random() * 5)],
-    likes: Math.floor(Math.random() * 215 - 15),
+    likes: Math.floor(Math.random() * 185 + 15),
     comments: getRandomComents()
   };
 }
@@ -47,8 +47,7 @@ var renderFoto = function (photo) {
 
   photoElement.querySelector('.picture__img').src = photo.name;
   photoElement.querySelector('.picture__likes').textContent = photo.likes;
-  photoElement.querySelector('.picture__comments').textContent = photo.comments;
-  photoElement.querySelector('.picture__info').textContent = photo.description;
+  photoElement.querySelector('.picture__comments').textContent = photo.comments.length;
 
   return photoElement;
 };
