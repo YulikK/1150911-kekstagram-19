@@ -100,6 +100,9 @@ var openPhotoWindow = function (photo) {
 
   renderCommentsList(photo.comments);
   bigPictureElement.classList.remove('hidden');
+  var bodyDocument = document.querySelector('body');
+  bodyDocument.classList.add('modal-open');
+
 };
 
 openPhotoWindow(photos[0]);
