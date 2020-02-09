@@ -14,7 +14,9 @@ var PHOTO_DESCRIPTION = ['Вот оно',
   'Целую',
   'Жду',
   'Мой'];
+var ESC_KEY = 'Escape';
 
+var bodyDocument = document.querySelector('body');
 var photoTemplate = document.querySelector('#picture')
     .content
     .querySelector('.picture');
@@ -100,9 +102,119 @@ var openPhotoWindow = function (photo) {
 
   renderCommentsList(photo.comments);
   bigPictureElement.classList.remove('hidden');
-  var bodyDocument = document.querySelector('body');
   bodyDocument.classList.add('modal-open');
 
 };
 
-openPhotoWindow(photos[0]);
+var uploadFileOpen = document.querySelector('#upload-file');
+var uploadFileForm = document.querySelector('.img-upload__overlay');
+var uploadFileCancel = document.querySelector('#upload-cancel');
+var effectLevelPin = document.querySelector('.effect-level__pin');
+var effectLevelLine = document.querySelector('.effect-level__line');
+var uploadSubmit = document.querySelector('#upload-submit');
+var hashtags = document.querySelector('.text__hashtags');
+var effectLevel = 0;
+
+var onPopupEscPress = function (evt) {
+  if (evt.key === ESC_KEY && evt.target && !evt.target.matches('.text__hashtags')) {
+    closePopup();
+  }
+};
+
+var onEffectPinMouseup = function () {
+  effectLevel = Math.round(effectLevelPin.offsetLeft * 100 / effectLevelLine.clientWidth);
+};
+
+var onEffectItemClick = function (evt) {
+  if (evt.target && evt.target.matches('.effects__preview')) {
+    effectLevel = 20;
+  }
+};
+
+var onDocumentClick = function (evt) {
+  if (evt.target && evt.target.matches('.picture__img')) {
+    openPhotoWindow(photos[0]);
+  }
+};
+
+var checkHastags = function (hashtagsArray, messageError) {
+  if (hashtagsArray.length > 5) {
+    messageError.push('Не более 5 хэштегов');
+  }
+
+  for (i = 0; i < hashtagsArray.length; i++) {
+    var hashtag = hashtagsArray[i].trim();
+    var message = ((messageError.length > 0) ? ' ' : '') + 'Хэштег ' + hashtag + ' не прошел проверку:';
+    var haveError = false;
+
+    if (hashtag[0] !== '#') {
+      message += ' Должен начинаться с символа #.';
+      haveError = true;
+    }
+    if (hashtag.length < 2) {
+      message += ' Не может состоять только из символа #.';
+      haveError = true;
+    }
+    if (hashtag.length > 20) {
+      message += ' Не более 20 символов.';
+      haveError = true;
+    }
+    var hashtagText = hashtag.substring(1);
+    if (/[^A-Za-z0-9_]/.test(hashtagText)) {
+      message += ' Может содержать только буквы и цифры.';
+      haveError = true;
+    }
+    var haveCopy = false;
+    for (var j = 0; j < i; j++) {
+      if (hashtagsArray[j].toLowerCase() === hashtagsArray[i].toLowerCase()) {
+        haveCopy = true;
+      }
+    }
+    if (haveCopy) {
+      message += ' Не должны повторяться.';
+      haveError = true;
+    }
+    if (haveError) {
+      messageError.push(message);
+    }
+  }
+};
+
+var onUploadSubmitClick = function () {
+  var hashtagsArray = hashtags.value.split(' ');
+  var messageError = [];
+
+  if (hashtagsArray.length > 0) {
+    checkHastags(hashtagsArray, messageError);
+    hashtags.setCustomValidity(messageError);
+  }
+};
+
+var openPopup = function () {
+  uploadFileForm.classList.remove('hidden');
+  bodyDocument.classList.add('modal-open');
+  document.addEventListener('keydown', onPopupEscPress);
+  effectLevelPin.addEventListener('mouseup', onEffectPinMouseup);
+  document.addEventListener('click', onEffectItemClick);
+  uploadSubmit.addEventListener('click', onUploadSubmitClick);
+  effectLevel = effectLevel; // лишняя строка, так как ругается что переменная нигде не используется
+};
+
+var closePopup = function () {
+  uploadFileForm.classList.add('hidden');
+  bodyDocument.classList.remove('modal-open');
+  uploadFileOpen.value = '';
+  effectLevelPin.removeEventListener('mouseup', onEffectPinMouseup);
+  document.removeEventListener('click', onEffectItemClick);
+  uploadSubmit.removeEventListener('click', onUploadSubmitClick);
+};
+
+document.addEventListener('click', onDocumentClick);
+
+uploadFileOpen.addEventListener('change', function () {
+  openPopup();
+});
+
+uploadFileCancel.addEventListener('click', function () {
+  closePopup();
+});
