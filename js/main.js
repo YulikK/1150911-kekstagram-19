@@ -106,13 +106,14 @@ var openPhotoWindow = function (photo) {
 
 };
 
-var uploadFileOpen = document.querySelector('#upload-file');
-var uploadFileForm = document.querySelector('.img-upload__overlay');
-var uploadFileCancel = document.querySelector('#upload-cancel');
-var effectLevelPin = document.querySelector('.effect-level__pin');
-var effectLevelLine = document.querySelector('.effect-level__line');
-var uploadSubmit = document.querySelector('#upload-submit');
-var hashtags = document.querySelector('.text__hashtags');
+var uploadSection = document.querySelector('.img-upload');
+var uploadFileOpen = uploadSection.querySelector('#upload-file');
+var uploadFileForm = uploadSection.querySelector('.img-upload__overlay');
+var uploadFileCancel = uploadSection.querySelector('#upload-cancel');
+var effectLevelPin = uploadSection.querySelector('.effect-level__pin');
+var effectLevelLine = uploadSection.querySelector('.effect-level__line');
+var uploadSubmit = uploadSection.querySelector('#upload-submit');
+var hashtags = uploadSection.querySelector('.text__hashtags');
 var effectLevel = 0;
 
 var onPopupEscPress = function (evt) {
@@ -211,10 +212,6 @@ var closePopup = function () {
 
 document.addEventListener('click', onDocumentClick);
 
-uploadFileOpen.addEventListener('change', function () {
-  openPopup();
-});
+uploadFileOpen.addEventListener('change', openPopup);
 
-uploadFileCancel.addEventListener('click', function () {
-  closePopup();
-});
+uploadFileCancel.addEventListener('click', closePopup);
