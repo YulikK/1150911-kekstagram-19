@@ -35,8 +35,17 @@ var getRandomComents = function () {
   return messages;
 };
 
+var guidPart = function () {
+  return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+};
+
+var createGuid = function () {
+  return (guidPart() + guidPart() + '-' + guidPart() + '-' + guidPart() + '-' + guidPart() + '-' + guidPart() + guidPart() + guidPart());
+};
+
 for (var i = 0; i < count; i++) {
   photos[i] = {
+    id: createGuid(),
     name: 'photos/' + (i + 1) + '.jpg',
     description: PHOTO_DESCRIPTION[Math.floor(Math.random() * 5)],
     likes: Math.floor(Math.random() * 185 + 15),
@@ -47,6 +56,7 @@ for (var i = 0; i < count; i++) {
 var renderFoto = function (photo) {
   var photoElement = photoTemplate.cloneNode(true);
 
+  photoElement.id = photo.id;
   photoElement.querySelector('.picture__img').src = photo.name;
   photoElement.querySelector('.picture__likes').textContent = photo.likes;
   photoElement.querySelector('.picture__comments').textContent = photo.comments.length;
@@ -60,10 +70,10 @@ for (i = 0; i < photos.length; i++) {
 }
 
 photoListElement.appendChild(fragment);
+var bigPictureElement = document.querySelector('.big-picture');
+var bigPictureCancel = document.querySelector('.big-picture__cancel');
 
-var openPhotoWindow = function (photo) {
-
-  var bigPictureElement = document.querySelector('.big-picture');
+var openPopupPhoto = function (photo) {
 
   document.querySelector('.big-picture__img img').src = photo.name;
   document.querySelector('.social__caption').textContent = photo.description;
@@ -103,7 +113,16 @@ var openPhotoWindow = function (photo) {
   renderCommentsList(photo.comments);
   bigPictureElement.classList.remove('hidden');
   bodyDocument.classList.add('modal-open');
+  document.addEventListener('keydown', onPopupPhotoEscPress);
+  bigPictureCancel.addEventListener('click', closePopupPhoto);
 
+};
+
+var closePopupPhoto = function () {
+  bigPictureElement.classList.add('hidden');
+  bodyDocument.classList.remove('modal-open');
+  document.removeEventListener('keydown', onPopupPhotoEscPress);
+  bigPictureCancel.removeEventListener('click', closePopupPhoto);
 };
 
 var uploadSection = document.querySelector('.img-upload');
@@ -116,9 +135,15 @@ var uploadSubmit = uploadSection.querySelector('#upload-submit');
 var hashtags = uploadSection.querySelector('.text__hashtags');
 var effectLevel = 0;
 
-var onPopupEscPress = function (evt) {
-  if (evt.key === ESC_KEY && evt.target && !evt.target.matches('.text__hashtags')) {
-    closePopup();
+var onPopupUploadEscPress = function (evt) {
+  if (evt.key === ESC_KEY && evt.target && !(evt.target.matches('.text__hashtags') || evt.target.matches('.text__description'))) {
+    closePopupUpload();
+  }
+};
+
+var onPopupPhotoEscPress = function (evt) {
+  if (evt.key === ESC_KEY) {
+    closePopupPhoto();
   }
 };
 
@@ -133,8 +158,10 @@ var onEffectItemClick = function (evt) {
 };
 
 var onDocumentClick = function (evt) {
-  if (evt.target && evt.target.matches('.picture__img')) {
-    openPhotoWindow(photos[0]);
+  for (i = 0; i < evt.path.length; i++) {
+    if (evt.path[i].tagName === 'A' && evt.path[i].classList.contains('picture')) {
+      openPopupPhoto(photos.find(x => x.id === evt.path[i].id));
+    }
   }
 };
 
@@ -175,6 +202,9 @@ var checkHastags = function (hashtagsArray, messageError) {
       message += ' Не должны повторяться.';
       haveError = true;
     }
+    if (hashtagsArray.length = 1 && hashtagsArray[0] === '') {
+      haveError = false;
+    }
     if (haveError) {
       messageError.push(message);
     }
@@ -191,17 +221,17 @@ var onUploadSubmitClick = function () {
   }
 };
 
-var openPopup = function () {
+var openPopupUpload = function () {
   uploadFileForm.classList.remove('hidden');
   bodyDocument.classList.add('modal-open');
-  document.addEventListener('keydown', onPopupEscPress);
+  document.addEventListener('keydown', onPopupUploadEscPress);
   effectLevelPin.addEventListener('mouseup', onEffectPinMouseup);
   document.addEventListener('click', onEffectItemClick);
   uploadSubmit.addEventListener('click', onUploadSubmitClick);
   effectLevel = effectLevel; // лишняя строка, так как ругается что переменная нигде не используется
 };
 
-var closePopup = function () {
+var closePopupUpload = function () {
   uploadFileForm.classList.add('hidden');
   bodyDocument.classList.remove('modal-open');
   uploadFileOpen.value = '';
@@ -210,8 +240,8 @@ var closePopup = function () {
   uploadSubmit.removeEventListener('click', onUploadSubmitClick);
 };
 
+uploadFileOpen.addEventListener('change', openPopupUpload);
+
+uploadFileCancel.addEventListener('click', closePopupUpload);
+
 document.addEventListener('click', onDocumentClick);
-
-uploadFileOpen.addEventListener('change', openPopup);
-
-uploadFileCancel.addEventListener('click', closePopup);
