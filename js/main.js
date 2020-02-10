@@ -160,7 +160,10 @@ var onEffectItemClick = function (evt) {
 var onDocumentClick = function (evt) {
   for (i = 0; i < evt.path.length; i++) {
     if (evt.path[i].tagName === 'A' && evt.path[i].classList.contains('picture')) {
-      openPopupPhoto(photos.find(x => x.id === evt.path[i].id));
+      openPopupPhoto(photos.find(function findObject(x) {
+        return x.id === evt.path[i].id;
+      }
+      ));
     }
   }
 };
@@ -202,7 +205,7 @@ var checkHastags = function (hashtagsArray, messageError) {
       message += ' Не должны повторяться.';
       haveError = true;
     }
-    if (hashtagsArray.length = 1 && hashtagsArray[0] === '') {
+    if (hashtagsArray[0] === '' && hashtagsArray.length === 1) {
       haveError = false;
     }
     if (haveError) {
