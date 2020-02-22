@@ -1,5 +1,5 @@
 'use strict';
-(function () {
+window.renderPhotoGalery = function () {
   var photoListElement = document.querySelector('.pictures');
   var photoTemplate = document.querySelector('#picture')
       .content
@@ -25,4 +25,4 @@
   }
 
   photoListElement.appendChild(fragment);
-})();
+};
