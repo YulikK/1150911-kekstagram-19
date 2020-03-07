@@ -1,5 +1,6 @@
 'use strict';
 window.photos = [];
+window.filterPhotos = [];
 
 var onDocumentClick = function (evt) {
   var bodyDocument = document.querySelector('body');
