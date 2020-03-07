@@ -5,6 +5,15 @@ window.renderPhotoGalery = function () {
       .content
       .querySelector('.picture');
 
+  var photos = document.querySelectorAll('.picture');
+  if (photos) {
+    var photosArray = [].map.call(photos, function (it) {
+      return it;
+    });
+    photosArray.forEach(function (photoElement) {
+      photoElement.remove();
+    });
+  }
 
   var renderFoto = function (photo) {
     var photoElement = photoTemplate.cloneNode(true);
@@ -20,8 +29,8 @@ window.renderPhotoGalery = function () {
   var fragment = document.createDocumentFragment();
 
 
-  for (var i = 0; i < window.photos.length; i++) {
-    fragment.appendChild(renderFoto(window.photos[i]));
+  for (var i = 0; i < window.filterPhotos.length; i++) {
+    fragment.appendChild(renderFoto(window.filterPhotos[i]));
   }
 
   photoListElement.appendChild(fragment);
