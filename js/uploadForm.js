@@ -6,11 +6,11 @@ var uploadFileOpen = uploadSection.querySelector('#upload-file');
 var uploadFileForm = uploadSection.querySelector('.img-upload__overlay');
 var uploadFileCancel = uploadSection.querySelector('#upload-cancel');
 var uploadForm = uploadSection.querySelector('#upload-select-image');
-var effectLevelPin = uploadSection.querySelector('.effect-level__pin');
-var effectLevelLine = uploadSection.querySelector('.effect-level__line');
+// var effectLevelPin = uploadSection.querySelector('.effect-level__pin');
+// var effectLevelLine = uploadSection.querySelector('.effect-level__line');
 var uploadSubmit = uploadSection.querySelector('#upload-submit');
 var hashtags = uploadSection.querySelector('.text__hashtags');
-var effectLevel = 0;
+// effectLevel = 0;
 
 var onUploadPopupEscPress = function (evt) {
   window.util.isEscEvent(evt, closeUploadPopup);
@@ -24,15 +24,15 @@ var onErrorPopupEscPress = function (evt) {
   window.util.isEscEvent(evt, window.closeErrorPopup);
 };
 
-var onEffectPinMouseup = function () {
-  effectLevel = Math.round(effectLevelPin.offsetLeft * 100 / effectLevelLine.clientWidth);
-};
+// var onEffectPinMouseup = function () {
+//   effectLevel = Math.round(effectLevelPin.offsetLeft * 100 / effectLevelLine.clientWidth);
+// };
 
-var onEffectItemClick = function (evt) {
-  if (evt.target && evt.target.matches('.effects__preview')) {
-    effectLevel = 20;
-  }
-};
+// var onEffectItemClick = function (evt) {
+//   if (evt.target && evt.target.matches('.effects__preview')) {
+//     effectLevel = 20;
+//   }
+// };
 
 window.closeSuccessPopup = function () {
   var successElement = bodyDocument.querySelector('.success');
@@ -103,10 +103,11 @@ var openUploadPopup = function () {
   uploadFileForm.classList.remove('hidden');
   bodyDocument.classList.add('modal-open');
   document.addEventListener('keydown', onUploadPopupEscPress);
-  effectLevelPin.addEventListener('mouseup', onEffectPinMouseup);
-  document.addEventListener('click', onEffectItemClick);
+  // effectLevelPin.addEventListener('mouseup', onEffectPinMouseup);
+  // document.addEventListener('click', onEffectItemClick);
   uploadSubmit.addEventListener('click', onSubmitClick);
-  effectLevel = effectLevel; // лишняя строка, так как ругается что переменная нигде не используется
+  // effectLevel = effectLevel; // лишняя строка, так как ругается что переменная нигде не используется
+  window.initEffectsBar();
 };
 
 var closeUploadPopup = function () {
@@ -115,8 +116,8 @@ var closeUploadPopup = function () {
   uploadFileOpen.value = '';
   uploadForm.reset();
   document.removeEventListener('keydown', onUploadPopupEscPress);
-  effectLevelPin.removeEventListener('mouseup', onEffectPinMouseup);
-  document.removeEventListener('click', onEffectItemClick);
+  // effectLevelPin.removeEventListener('mouseup', onEffectPinMouseup);
+  // document.removeEventListener('click', onEffectItemClick);
   uploadSubmit.removeEventListener('click', onSubmitClick);
 };
 
