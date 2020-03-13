@@ -1,126 +1,112 @@
 'use strict';
+(function () {
+  var bodyDocument = document.querySelector('body');
+  var uploadSection = document.querySelector('.img-upload');
+  var uploadFileOpen = uploadSection.querySelector('#upload-file');
+  var uploadFileForm = uploadSection.querySelector('.img-upload__overlay');
+  var uploadFileCancel = uploadSection.querySelector('#upload-cancel');
+  var uploadForm = uploadSection.querySelector('#upload-select-image');
+  var uploadSubmit = uploadSection.querySelector('#upload-submit');
+  var hashtags = uploadSection.querySelector('.text__hashtags');
 
-var bodyDocument = document.querySelector('body');
-var uploadSection = document.querySelector('.img-upload');
-var uploadFileOpen = uploadSection.querySelector('#upload-file');
-var uploadFileForm = uploadSection.querySelector('.img-upload__overlay');
-var uploadFileCancel = uploadSection.querySelector('#upload-cancel');
-var uploadForm = uploadSection.querySelector('#upload-select-image');
-// var effectLevelPin = uploadSection.querySelector('.effect-level__pin');
-// var effectLevelLine = uploadSection.querySelector('.effect-level__line');
-var uploadSubmit = uploadSection.querySelector('#upload-submit');
-var hashtags = uploadSection.querySelector('.text__hashtags');
-// effectLevel = 0;
+  var onUploadPopupEscPress = function (evt) {
+    window.util.isEscEvent(evt, closeUploadPopup);
+  };
 
-var onUploadPopupEscPress = function (evt) {
-  window.util.isEscEvent(evt, closeUploadPopup);
-};
+  var onSuccessPopupEscPress = function (evt) {
+    window.util.isEscEvent(evt, window.closeSuccessPopup);
+  };
 
-var onSuccessPopupEscPress = function (evt) {
-  window.util.isEscEvent(evt, window.closeSuccessPopup);
-};
+  var onErrorPopupEscPress = function (evt) {
+    window.util.isEscEvent(evt, window.closeErrorPopup);
+  };
 
-var onErrorPopupEscPress = function (evt) {
-  window.util.isEscEvent(evt, window.closeErrorPopup);
-};
+  window.closeSuccessPopup = function () {
+    var successElement = bodyDocument.querySelector('.success');
+    bodyDocument.classList.remove('modal-open');
+    var successCancel = bodyDocument.querySelector('.success__button');
+    successCancel.removeEventListener('click', window.closeSuccessPopup);
+    document.removeEventListener('keydown', onSuccessPopupEscPress);
+    successElement.remove();
+  };
 
-// var onEffectPinMouseup = function () {
-//   effectLevel = Math.round(effectLevelPin.offsetLeft * 100 / effectLevelLine.clientWidth);
-// };
+  window.closeErrorPopup = function () {
+    var errorElement = bodyDocument.querySelector('.error');
+    bodyDocument.classList.remove('modal-open');
+    var errorCancel = bodyDocument.querySelector('.error__button');
+    errorCancel.removeEventListener('click', window.closeErrorPopup);
+    document.removeEventListener('keydown', onErrorPopupEscPress);
+    errorElement.remove();
+  };
 
-// var onEffectItemClick = function (evt) {
-//   if (evt.target && evt.target.matches('.effects__preview')) {
-//     effectLevel = 20;
-//   }
-// };
+  var openSuccessPopup = function () {
 
-window.closeSuccessPopup = function () {
-  var successElement = bodyDocument.querySelector('.success');
-  bodyDocument.classList.remove('modal-open');
-  var successCancel = bodyDocument.querySelector('.success__button');
-  successCancel.removeEventListener('click', window.closeSuccessPopup);
-  document.removeEventListener('keydown', onSuccessPopupEscPress);
-  successElement.remove();
-};
+    var successTemplate = document.querySelector('#success')
+        .content
+        .querySelector('.success');
+    var main = bodyDocument.querySelector('main');
+    var successElement = successTemplate.cloneNode(true);
+    main.appendChild(successElement);
+    bodyDocument.classList.add('modal-open');
+    var successCancel = bodyDocument.querySelector('.success__button');
+    successCancel.addEventListener('click', window.closeSuccessPopup);
+    document.addEventListener('keydown', onSuccessPopupEscPress);
+  };
 
-window.closeErrorPopup = function () {
-  var errorElement = bodyDocument.querySelector('.error');
-  bodyDocument.classList.remove('modal-open');
-  var errorCancel = bodyDocument.querySelector('.error__button');
-  errorCancel.removeEventListener('click', window.closeErrorPopup);
-  document.removeEventListener('keydown', onErrorPopupEscPress);
-  errorElement.remove();
-};
+  var openErrorPopup = function () {
 
-var openSuccessPopup = function () {
+    var errorTemplate = document.querySelector('#error')
+        .content
+        .querySelector('.error');
+    var main = bodyDocument.querySelector('main');
+    var errorElement = errorTemplate.cloneNode(true);
+    main.appendChild(errorElement);
+    bodyDocument.classList.add('modal-open');
+    var errorCancel = bodyDocument.querySelector('.error__button');
+    errorCancel.addEventListener('click', window.closeErrorPopup);
+    document.addEventListener('keydown', onErrorPopupEscPress);
+  };
 
-  var successTemplate = document.querySelector('#success')
-      .content
-      .querySelector('.success');
-  var main = bodyDocument.querySelector('main');
-  var successElement = successTemplate.cloneNode(true);
-  main.appendChild(successElement);
-  bodyDocument.classList.add('modal-open');
-  var successCancel = bodyDocument.querySelector('.success__button');
-  successCancel.addEventListener('click', window.closeSuccessPopup);
-  document.addEventListener('keydown', onSuccessPopupEscPress);
-};
+  var onSubmitClick = function (evt) {
+    var hashtagsArray = hashtags.value.split(' ');
+    var messageError = [];
 
-var openErrorPopup = function () {
+    if (hashtagsArray.length > 0) {
+      window.checkHastags(hashtagsArray, messageError);
+      hashtags.setCustomValidity(messageError);
+    }
 
-  var errorTemplate = document.querySelector('#error')
-      .content
-      .querySelector('.error');
-  var main = bodyDocument.querySelector('main');
-  var errorElement = errorTemplate.cloneNode(true);
-  main.appendChild(errorElement);
-  bodyDocument.classList.add('modal-open');
-  var errorCancel = bodyDocument.querySelector('.error__button');
-  errorCancel.addEventListener('click', window.closeErrorPopup);
-  document.addEventListener('keydown', onErrorPopupEscPress);
-};
+    window.backend.save(new FormData(uploadForm), function () {
+      closeUploadPopup();
+      openSuccessPopup();
+    }, function () {
+      closeUploadPopup();
+      openErrorPopup();
+    });
+    evt.preventDefault();
+  };
 
-var onSubmitClick = function (evt) {
-  var hashtagsArray = hashtags.value.split(' ');
-  var messageError = [];
+  var openUploadPopup = function () {
+    uploadFileForm.classList.remove('hidden');
+    bodyDocument.classList.add('modal-open');
+    document.addEventListener('keydown', onUploadPopupEscPress);
+    uploadSubmit.addEventListener('click', onSubmitClick);
+    window.effect.initBar();
+    window.scale.initBar();
+  };
 
-  if (hashtagsArray.length > 0) {
-    window.checkHastags(hashtagsArray, messageError);
-    hashtags.setCustomValidity(messageError);
-  }
+  var closeUploadPopup = function () {
+    uploadFileForm.classList.add('hidden');
+    bodyDocument.classList.remove('modal-open');
+    uploadFileOpen.value = '';
+    uploadForm.reset();
+    document.removeEventListener('keydown', onUploadPopupEscPress);
+    uploadSubmit.removeEventListener('click', onSubmitClick);
+    window.effect.removeBar();
+    window.scale.removeBar();
+  };
 
-  window.backend.save(new FormData(uploadForm), function () {
-    closeUploadPopup();
-    openSuccessPopup();
-  }, function () {
-    closeUploadPopup();
-    openErrorPopup();
-  });
-  evt.preventDefault();
-};
+  uploadFileOpen.addEventListener('change', openUploadPopup);
 
-var openUploadPopup = function () {
-  uploadFileForm.classList.remove('hidden');
-  bodyDocument.classList.add('modal-open');
-  document.addEventListener('keydown', onUploadPopupEscPress);
-  // effectLevelPin.addEventListener('mouseup', onEffectPinMouseup);
-  // document.addEventListener('click', onEffectItemClick);
-  uploadSubmit.addEventListener('click', onSubmitClick);
-  // effectLevel = effectLevel; // лишняя строка, так как ругается что переменная нигде не используется
-  window.initEffectsBar();
-};
-
-var closeUploadPopup = function () {
-  uploadFileForm.classList.add('hidden');
-  bodyDocument.classList.remove('modal-open');
-  uploadFileOpen.value = '';
-  uploadForm.reset();
-  document.removeEventListener('keydown', onUploadPopupEscPress);
-  // effectLevelPin.removeEventListener('mouseup', onEffectPinMouseup);
-  // document.removeEventListener('click', onEffectItemClick);
-  uploadSubmit.removeEventListener('click', onSubmitClick);
-};
-
-uploadFileOpen.addEventListener('change', openUploadPopup);
-
-uploadFileCancel.addEventListener('click', closeUploadPopup);
+  uploadFileCancel.addEventListener('click', closeUploadPopup);
+})();
