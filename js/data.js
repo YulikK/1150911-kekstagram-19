@@ -10,15 +10,15 @@
 
   var successHandler = function (photos) {
 
-    for (var i = 0; i < photos.length; i++) {
+    photos.forEach(function (photo) {
       window.photos.push({
         id: createGuid(),
-        name: photos[i].url,
-        description: photos[i].description,
-        likes: photos[i].likes,
-        comments: photos[i].comments
+        name: photo.url,
+        description: photo.description,
+        likes: photo.likes,
+        comments: photo.comments
       });
-    }
+    });
 
     window.updateGallery();
   };

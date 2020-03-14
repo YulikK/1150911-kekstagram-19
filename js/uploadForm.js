@@ -76,14 +76,19 @@
       hashtags.setCustomValidity(messageError);
     }
 
-    window.backend.save(new FormData(uploadForm), function () {
-      closeUploadPopup();
-      openSuccessPopup();
-    }, function () {
-      closeUploadPopup();
-      openErrorPopup();
-    });
-    evt.preventDefault();
+    if (messageError.length === 0) {
+      hashtags.style = '';
+      window.backend.save(new FormData(uploadForm), function () {
+        closeUploadPopup();
+        openSuccessPopup();
+      }, function () {
+        closeUploadPopup();
+        openErrorPopup();
+      });
+      evt.preventDefault();
+    } else {
+      hashtags.style.border = '1px solid red';
+    }
   };
 
   var openUploadPopup = function () {
@@ -93,6 +98,7 @@
     uploadSubmit.addEventListener('click', onSubmitClick);
     window.effect.initBar();
     window.scale.initBar();
+    uploadFileCancel.addEventListener('click', closeUploadPopup);
   };
 
   var closeUploadPopup = function () {
@@ -101,12 +107,11 @@
     uploadFileOpen.value = '';
     uploadForm.reset();
     document.removeEventListener('keydown', onUploadPopupEscPress);
+    uploadFileCancel.removeEventListener('click', closeUploadPopup);
     uploadSubmit.removeEventListener('click', onSubmitClick);
     window.effect.removeBar();
     window.scale.removeBar();
   };
 
   uploadFileOpen.addEventListener('change', openUploadPopup);
-
-  uploadFileCancel.addEventListener('click', closeUploadPopup);
 })();

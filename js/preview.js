@@ -1,11 +1,11 @@
 'use strict';
 (function () {
+  var MAX_COMMENTS = 5;
   var bigPictureElement = document.querySelector('.big-picture');
   var bodyDocument = document.querySelector('body');
   var previewCancel = document.querySelector('.big-picture__cancel');
   var commentTemplate = document.querySelector('.social__comment');
   var commentsLoader = document.querySelector('.comments-loader');
-  var MAX_COMMENTS = 5;
   var commentsList;
 
   var renderComment = function (comment) {
@@ -29,11 +29,11 @@
 
     var socialCommentsList = document.querySelector('.social__comments');
 
-    var commetsNow = socialCommentsList.childElementCount;
-    var commentsCount = Math.min(commentsList.length - commetsNow, MAX_COMMENTS);
+    var commentsNow = socialCommentsList.childElementCount;
+    var commentsCount = Math.min(commentsList.length - commentsNow, MAX_COMMENTS);
     var fragmentCommet = document.createDocumentFragment();
 
-    for (var i = commetsNow; i < commetsNow + commentsCount; i++) {
+    for (var i = commentsNow; i < commentsNow + commentsCount; i++) {
       fragmentCommet.appendChild(renderComment(commentsList[i]));
     }
 
@@ -70,9 +70,9 @@
   var closePreview = function () {
     bigPictureElement.classList.add('hidden');
     bodyDocument.classList.remove('modal-open');
-
     document.removeEventListener('keydown', onPreviewEscPress);
     previewCancel.removeEventListener('click', closePreview);
+    commentsLoader.removeEventListener('click', renderCommentsList);
   };
 
   var onPreviewEscPress = function (evt) {

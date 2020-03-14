@@ -29,10 +29,9 @@
 
     var fragment = document.createDocumentFragment();
 
-
-    for (var i = 0; i < window.filterPhotos.length; i++) {
-      fragment.appendChild(renderFoto(window.filterPhotos[i]));
-    }
+    window.filterPhotos.forEach(function (photo) {
+      fragment.appendChild(renderFoto(photo));
+    });
 
     photoListElement.appendChild(fragment);
   };

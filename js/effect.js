@@ -1,26 +1,22 @@
 'use strict';
 
 (function () {
+  var START_EFFECT_LEVEL = 100;
   var uploadSection = document.querySelector('.img-upload');
   var form = uploadSection.querySelector('.img-upload__form');
   var pinElement = uploadSection.querySelector('.effect-level__pin');
   var effectLevelLine = uploadSection.querySelector('.effect-level__line');
   var effectLeveBar = uploadSection.querySelector('.img-upload__effect-level');
-  var effectLevel = uploadSection.querySelector('input[name="effect-level"]');
+  var effectLevelInput = uploadSection.querySelector('input[name="effect-level"]');
   var effectLevelDepth = uploadSection.querySelector('.effect-level__depth');
   var imgPreview = uploadSection.querySelector('.img-upload__preview');
-  var activeEffect = 'none';
-  var START_EFFECT_LEVEL = 100;
-
-  effectLevel.value = START_EFFECT_LEVEL;
-
-  var onEffectPinMouseup = function () {
-    effectLevel.value = Math.round(pinElement.offsetLeft * 100 / effectLevelLine.clientWidth);
-  };
+  var effectName;
+  var effectLevel;
 
   var cleareFilterList = function () {
-    var filterArray = Array.from(imgPreview.classList);
-    filterArray.forEach(function (classElement) {
+    effectLevel = START_EFFECT_LEVEL;
+    var filtersArray = Array.from(imgPreview.classList);
+    filtersArray.forEach(function (classElement) {
       if (classElement.indexOf('--') >= 0) {
         imgPreview.classList.remove(classElement);
       }
@@ -28,21 +24,22 @@
   };
 
   var setEffectLevel = function () {
-    switch (activeEffect) {
+    effectLevelInput.value = effectLevel;
+    switch (effectName) {
       case 'chrome':
-        imgPreview.style.filter = 'grayscale(' + effectLevel.value / 100 + ')';
+        imgPreview.style.filter = 'grayscale(' + effectLevel / 100 + ')';
         break;
       case 'sepia':
-        imgPreview.style.filter = 'sepia(' + effectLevel.value / 100 + ')';
+        imgPreview.style.filter = 'sepia(' + effectLevel / 100 + ')';
         break;
       case 'marvin':
-        imgPreview.style.filter = 'invert(' + effectLevel.value + '%)';
+        imgPreview.style.filter = 'invert(' + effectLevel + '%)';
         break;
       case 'phobos':
-        imgPreview.style.filter = 'blur(' + effectLevel.value * 3 / 100 + 'px)';
+        imgPreview.style.filter = 'blur(' + effectLevel * 3 / 100 + 'px)';
         break;
       case 'heat':
-        imgPreview.style.filter = 'brightness(' + effectLevel.value * 3 / 100 + ')';
+        imgPreview.style.filter = 'brightness(' + effectLevel * 3 / 100 + ')';
         break;
       case 'none':
         imgPreview.style.filter = 'none';
@@ -60,58 +57,50 @@
 
   var setFilter = function () {
     cleareFilterList();
-    if (activeEffect !== 'none') {
-      imgPreview.classList.add('effects__preview--' + activeEffect);
-      effectLevel.value = START_EFFECT_LEVEL;
+    if (effectName !== 'none') {
+      imgPreview.classList.add('effects__preview--' + effectName);
     }
     setEffectLevel();
-    setVisibleLevelLine(activeEffect !== 'none');
+    setVisibleLevelLine(effectName !== 'none');
+    window.slider.setStartPosition(pinElement, effectLevelLine, effectLevel, updateEffectLevelDepth);
   };
 
   var onUploadFormChange = function (evt) {
     if (evt.target && evt.target.matches('input[name="effect"]')) {
-      activeEffect = evt.target.value;
+      effectName = evt.target.value;
       setFilter();
     }
   };
 
   var updateEffect = function () {
-    effectLevel.value = Math.round(pinElement.offsetLeft * 100 / effectLevelLine.clientWidth);
-    effectLevelDepth.style.width = pinElement.offsetLeft + 'px';
+    effectLevel = Math.round(pinElement.offsetLeft * 100 / effectLevelLine.clientWidth);
     setEffectLevel();
+    updateEffectLevelDepth();
+  };
+
+  var updateEffectLevelDepth = function () {
+    effectLevelDepth.style.width = pinElement.offsetLeft + 'px';
   };
 
   window.effect = {
+
     initBar: function () {
 
-      pinElement.addEventListener('mouseup', onEffectPinMouseup);
       form.addEventListener('change', onUploadFormChange);
-      window.initSlider(pinElement, effectLevelLine, updateEffect);
-      effectLevel.value = START_EFFECT_LEVEL;
-      window.setStartPosition(pinElement, effectLevelLine, effectLevel.value, updateEffect);
-      setVisibleLevelLine(activeEffect !== 'none');
+      window.slider.init(pinElement, effectLevelLine, updateEffect);
+      effectName = 'none';
+      setFilter();
+
     },
+
     removeBar: function () {
 
-      pinElement.removeEventListener('mouseup', onEffectPinMouseup);
       document.removeEventListener('change', onUploadFormChange);
+      window.slider.remove(pinElement);
+      setVisibleLevelLine(true);
 
     }
+
   };
-  // window.effect.initBar = function () {
 
-  //   pinElement.addEventListener('mouseup', onEffectPinMouseup);
-  //   form.addEventListener('change', onUploadFormChange);
-  //   window.initSlider(pinElement, effectLevelLine, updateEffect);
-  //   effectLevel.value = START_EFFECT_LEVEL;
-  //   window.setStartPosition(pinElement, effectLevelLine, effectLevel.value, updateEffect);
-  //   setVisibleLevelLine(activeEffect !== 'none');
-  // };
-
-  // window.effect.removeBar = function () {
-
-  //   pinElement.removeEventListener('mouseup', onEffectPinMouseup);
-  //   document.removeEventListener('change', onUploadFormChange);
-
-  // };
 })();

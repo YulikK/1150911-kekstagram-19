@@ -61,11 +61,11 @@
     }
   };
 
-  var onfilterSectionClick = function (evt) {
+  var onFilterSectionClick = function (evt) {
     if (evt.target && evt.target.matches('.img-filters__button')) {
       setActiveFilter(evt.target.id);
     }
   };
 
-  filterSection.addEventListener('click', onfilterSectionClick);
+  filterSection.addEventListener('click', onFilterSectionClick);
 })();
