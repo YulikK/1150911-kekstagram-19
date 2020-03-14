@@ -5,7 +5,7 @@
   var scaleSmall = uploadSection.querySelector('.scale__control--smaller');
   var scaleBig = uploadSection.querySelector('.scale__control--bigger');
   var scaleInput = uploadSection.querySelector('.scale__control--value');
-  var imgPreview = uploadSection.querySelector('.img-upload__preview');
+  var imgPreview = uploadSection.querySelector('.img-upload__preview img');
   var scale;
 
   var setStartScale = function () {

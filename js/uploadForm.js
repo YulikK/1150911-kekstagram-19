@@ -69,10 +69,10 @@
 
   var onSubmitClick = function (evt) {
     var hashtagsArray = hashtags.value.split(' ');
-    var messageError = [];
+    var messageError = '';
 
     if (hashtagsArray.length > 0) {
-      window.checkHastags(hashtagsArray, messageError);
+      messageError = window.checkHastags(hashtagsArray);
       hashtags.setCustomValidity(messageError);
     }
 
